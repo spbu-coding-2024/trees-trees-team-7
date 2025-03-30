@@ -99,4 +99,21 @@ class BinarySearchTree<K : Comparable<K>, V> : Tree<K, V> {
 
         return result
     }
+
+    fun contains(key: K): Boolean {
+        return containsRecursive(root, key)
+    }
+
+    private fun containsRecursive(node: Node<K, V>?, key: K): Boolean {
+        if (node == null) {
+            return false
+        }
+
+        return when {
+            key < node.key -> containsRecursive(node.left, key)
+            key > node.key -> containsRecursive(node.right, key)
+            else -> true
+        }
+    }
 }
+
