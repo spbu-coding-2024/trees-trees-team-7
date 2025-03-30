@@ -1,4 +1,4 @@
-package BST
+package bst
 
 import Node
 import Tree
