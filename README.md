@@ -61,6 +61,10 @@ dictionary.iteration().forEach { (term, definition) ->
 + Daniil Ivanov - t.me/desiredeternityyy
 + Vladimir Khmelev - t.me/khmelevvova
 
+## DOCS
+
+The [documentation](https://github.com/spbu-coding-2024/trees-trees-team-7/blob/main/docs.md) is available at the root of the repository
+
 ## LICENSE 📜
 
 This project is licensed under the MIT license. For more information, see the LICENSE file.
