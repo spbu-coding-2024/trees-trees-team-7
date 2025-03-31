@@ -1,4 +1,4 @@
-package rbt
+package trees.rbt
 
 import Tree
 
@@ -201,7 +201,8 @@ class RBTree<K : Comparable<K>, V> : Tree<K, V> {
                 }
 
                 if (sibling.left()?.color != RBTColor.RED &&
-                    sibling.right()?.color != RBTColor.RED) {
+                    sibling.right()?.color != RBTColor.RED
+                ) {
                     sibling.color = RBTColor.RED
                     current = current.parent!!
                 } else {
@@ -228,7 +229,8 @@ class RBTree<K : Comparable<K>, V> : Tree<K, V> {
                 }
 
                 if (sibling.left()?.color != RBTColor.RED &&
-                    sibling.right()?.color != RBTColor.RED) {
+                    sibling.right()?.color != RBTColor.RED
+                ) {
                     sibling.color = RBTColor.RED
                     current = current.parent!!
                 } else {

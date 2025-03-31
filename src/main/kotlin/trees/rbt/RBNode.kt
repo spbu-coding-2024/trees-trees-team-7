@@ -1,4 +1,4 @@
-package rbt
+package trees.rbt
 
 import Node
 
