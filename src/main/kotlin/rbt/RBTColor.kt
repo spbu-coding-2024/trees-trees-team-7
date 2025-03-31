@@ -1,6 +1,6 @@
 package rbt
 
-enum class Color {
+enum class RBTColor {
     RED,
     BLACK
 }

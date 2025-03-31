@@ -108,7 +108,7 @@ class RBTreeTest {
     private fun isValidRedBlackTree(tree: RBTree<Int, String>): Boolean {
         val root = getRoot(tree) ?: return true
 
-        if (root.color != Color.BLACK) {
+        if (root.color != RBTColor.BLACK) {
             println("Violation: Root is not black")
             return false
         }
@@ -140,7 +140,7 @@ class RBTreeTest {
             return
         }
 
-        val newHeight = current + if (node.color == Color.BLACK) 1 else 0
+        val newHeight = current + if (node.color == RBTColor.BLACK) 1 else 0
         if (node.left() == null && node.right() == null) {
             heights.add(newHeight + 1)
         } else {
@@ -151,8 +151,8 @@ class RBTreeTest {
 
     private fun hasConsecutiveRedNodes(node: RBNode<Int, String>?): Boolean {
         if (node == null) return false
-        if (node.color == Color.RED) {
-            if (node.left()?.color == Color.RED || node.right()?.color == Color.RED) {
+        if (node.color == RBTColor.RED) {
+            if (node.left()?.color == RBTColor.RED || node.right()?.color == RBTColor.RED) {
                 return true
             }
         }

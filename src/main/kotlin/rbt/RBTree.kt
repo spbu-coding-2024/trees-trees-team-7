@@ -31,21 +31,21 @@ class RBTree<K : Comparable<K>, V> : Tree<K, V> {
         }
 
         fixAfterInsertion(newNode)
-        root?.color = Color.BLACK
+        root?.color = RBTColor.BLACK
     }
 
     private fun fixAfterInsertion(node: RBNode<K, V>) {
         var current = node
-        while (current != root && current.parent?.color == Color.RED) {
+        while (current != root && current.parent?.color == RBTColor.RED) {
             val parent = current.parent!!
             val grandparent = parent.parent ?: break
 
             if (parent == grandparent.left()) {
                 val uncle = grandparent.right()
-                if (uncle?.color == Color.RED) {
-                    parent.color = Color.BLACK
-                    uncle.color = Color.BLACK
-                    grandparent.color = Color.RED
+                if (uncle?.color == RBTColor.RED) {
+                    parent.color = RBTColor.BLACK
+                    uncle.color = RBTColor.BLACK
+                    grandparent.color = RBTColor.RED
                     current = grandparent
                     continue
                 }
@@ -53,15 +53,15 @@ class RBTree<K : Comparable<K>, V> : Tree<K, V> {
                     current = parent
                     rotateLeft(current)
                 }
-                parent.color = Color.BLACK
-                grandparent.color = Color.RED
+                parent.color = RBTColor.BLACK
+                grandparent.color = RBTColor.RED
                 rotateRight(grandparent)
             } else {
                 val uncle = grandparent.left()
-                if (uncle?.color == Color.RED) {
-                    parent.color = Color.BLACK
-                    uncle.color = Color.BLACK
-                    grandparent.color = Color.RED
+                if (uncle?.color == RBTColor.RED) {
+                    parent.color = RBTColor.BLACK
+                    uncle.color = RBTColor.BLACK
+                    grandparent.color = RBTColor.RED
                     current = grandparent
                     continue
                 }
@@ -69,12 +69,12 @@ class RBTree<K : Comparable<K>, V> : Tree<K, V> {
                     current = parent
                     rotateRight(current)
                 }
-                parent.color = Color.BLACK
-                grandparent.color = Color.RED
+                parent.color = RBTColor.BLACK
+                grandparent.color = RBTColor.RED
                 rotateLeft(grandparent)
             }
         }
-        root?.color = Color.BLACK
+        root?.color = RBTColor.BLACK
     }
 
     private fun rotateLeft(node: RBNode<K, V>) {
@@ -128,7 +128,7 @@ class RBTree<K : Comparable<K>, V> : Tree<K, V> {
     override fun delete(key: K) {
         val node = searchNode(key) ?: return
         deleteNode(node)
-        root?.color = Color.BLACK
+        root?.color = RBTColor.BLACK
     }
 
     private fun deleteNode(z: RBNode<K, V>) {
@@ -161,7 +161,7 @@ class RBTree<K : Comparable<K>, V> : Tree<K, V> {
             }
         }
 
-        if (yOriginalColor == Color.BLACK) {
+        if (yOriginalColor == RBTColor.BLACK) {
             x?.let { fixAfterDeletion(it) }
         }
     }
@@ -189,65 +189,65 @@ class RBTree<K : Comparable<K>, V> : Tree<K, V> {
 
     private fun fixAfterDeletion(x: RBNode<K, V>?) {
         var current = x ?: return
-        while (current != root && current.color == Color.BLACK) {
+        while (current != root && current.color == RBTColor.BLACK) {
             if (current == current.parent?.left()) {
                 var sibling = current.parent?.right() ?: break
 
-                if (sibling.color == Color.RED) {
-                    sibling.color = Color.BLACK
-                    current.parent?.color = Color.RED
+                if (sibling.color == RBTColor.RED) {
+                    sibling.color = RBTColor.BLACK
+                    current.parent?.color = RBTColor.RED
                     rotateLeft(current.parent!!)
                     sibling = current.parent?.right() ?: break
                 }
 
-                if (sibling.left()?.color != Color.RED &&
-                    sibling.right()?.color != Color.RED) {
-                    sibling.color = Color.RED
+                if (sibling.left()?.color != RBTColor.RED &&
+                    sibling.right()?.color != RBTColor.RED) {
+                    sibling.color = RBTColor.RED
                     current = current.parent!!
                 } else {
-                    if (sibling.right()?.color != Color.RED) {
-                        sibling.left()?.color = Color.BLACK
-                        sibling.color = Color.RED
+                    if (sibling.right()?.color != RBTColor.RED) {
+                        sibling.left()?.color = RBTColor.BLACK
+                        sibling.color = RBTColor.RED
                         rotateRight(sibling)
                         sibling = current.parent?.right() ?: break
                     }
-                    sibling.color = current.parent?.color ?: Color.BLACK
-                    current.parent?.color = Color.BLACK
-                    sibling.right()?.color = Color.BLACK
+                    sibling.color = current.parent?.color ?: RBTColor.BLACK
+                    current.parent?.color = RBTColor.BLACK
+                    sibling.right()?.color = RBTColor.BLACK
                     rotateLeft(current.parent!!)
                     current = root!!
                 }
             } else {
                 var sibling = current.parent?.left() ?: break
 
-                if (sibling.color == Color.RED) {
-                    sibling.color = Color.BLACK
-                    current.parent?.color = Color.RED
+                if (sibling.color == RBTColor.RED) {
+                    sibling.color = RBTColor.BLACK
+                    current.parent?.color = RBTColor.RED
                     rotateRight(current.parent!!)
                     sibling = current.parent?.left() ?: break
                 }
 
-                if (sibling.left()?.color != Color.RED &&
-                    sibling.right()?.color != Color.RED) {
-                    sibling.color = Color.RED
+                if (sibling.left()?.color != RBTColor.RED &&
+                    sibling.right()?.color != RBTColor.RED) {
+                    sibling.color = RBTColor.RED
                     current = current.parent!!
                 } else {
-                    if (sibling.left()?.color != Color.RED) {
-                        sibling.right()?.color = Color.BLACK
-                        sibling.color = Color.RED
+                    if (sibling.left()?.color != RBTColor.RED) {
+                        sibling.right()?.color = RBTColor.BLACK
+                        sibling.color = RBTColor.RED
                         rotateLeft(sibling)
                         sibling = current.parent?.left() ?: break
                     }
 
-                    sibling.color = current.parent?.color ?: Color.BLACK
-                    current.parent?.color = Color.BLACK
-                    sibling.left()?.color = Color.BLACK
+                    sibling.color = current.parent?.color ?: RBTColor.BLACK
+                    current.parent?.color = RBTColor.BLACK
+                    sibling.left()?.color = RBTColor.BLACK
                     rotateRight(current.parent!!)
                     current = root!!
                 }
             }
         }
-        current.color = Color.BLACK
+        current.color = RBTColor.BLACK
     }
 
     override fun iteration(): List<Pair<K, V>> {

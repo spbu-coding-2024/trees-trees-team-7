@@ -6,7 +6,7 @@ class RBNode<K : Comparable<K>, V>(
     key: K,
     value: V
 ) : Node<K, V>(key, value) {
-    var color: Color = Color.RED
+    var color: RBTColor = RBTColor.RED
     var parent: RBNode<K, V>? = null
 
     fun left(): RBNode<K, V>? = super.left as? RBNode<K, V>
