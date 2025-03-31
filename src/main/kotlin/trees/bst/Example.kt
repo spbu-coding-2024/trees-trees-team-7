@@ -1,3 +1,5 @@
 package bst
 
-fun main
+fun main() {
+	println("I can't do it anymore")
+}
