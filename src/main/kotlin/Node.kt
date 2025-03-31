@@ -1,4 +1,7 @@
-class Node <K : Comparable<K>, V>(var key: K, var value: V) {
-    var left: Node<K, V>? = null
-    var right: Node<K, V>? = null
+open class Node<K : Comparable<K>, V, N : Node<K, V, N>>(
+    var key: K,
+    var value: V
+) {
+    var left: N? = null
+    var right: N? = null
 }
