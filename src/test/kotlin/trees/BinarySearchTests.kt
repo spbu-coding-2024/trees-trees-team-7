@@ -26,10 +26,6 @@ class BinarySearchTests {
             assertTrue(tree.contains(35))
             assertTrue(tree.contains(100))
             assertTrue(tree.contains(0))
+        }
     }
-
-
-
-
-
 }
