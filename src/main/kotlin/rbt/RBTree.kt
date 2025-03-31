@@ -7,39 +7,38 @@ class RBTree<K : Comparable<K>, V> : Tree<K, V> {
 
     override fun insert(key: K, value: V) {
         val newNode = RBNode(key, value)
-        if (root == null) {
-            root = newNode
-        } else {
-            insertNode(root!!, newNode)
-        }
-        fixAfterInsertion(newNode)
-    }
+        var parent: RBNode<K, V>? = null
+        var current = root
 
-    private fun insertNode(current: RBNode<K, V>, newNode: RBNode<K, V>) {
-        when {
-            newNode.key < current.key -> {
-                if (current.left() == null) {
-                    current.setLeft(newNode)
-                } else {
-                    insertNode(current.left()!!, newNode)
+        while (current != null) {
+            parent = current
+            current = when {
+                key < current.key -> current.left()
+                key > current.key -> current.right()
+                else -> {
+                    current.value = value
+                    return
                 }
             }
-            newNode.key > current.key -> {
-                if (current.right() == null) {
-                    current.setRight(newNode)
-                } else {
-                    insertNode(current.right()!!, newNode)
-                }
-            }
-            else -> current.value = newNode.value
         }
+
+        newNode.parent = parent
+
+        when {
+            parent == null -> root = newNode
+            key < parent.key -> parent.setLeft(newNode)
+            else -> parent.setRight(newNode)
+        }
+
+        fixAfterInsertion(newNode)
+        root?.color = Color.BLACK
     }
 
     private fun fixAfterInsertion(node: RBNode<K, V>) {
         var current = node
         while (current != root && current.parent?.color == Color.RED) {
             val parent = current.parent!!
-            val grandparent = parent.parent!!
+            val grandparent = parent.parent ?: break
 
             if (parent == grandparent.left()) {
                 val uncle = grandparent.right()
@@ -48,15 +47,15 @@ class RBTree<K : Comparable<K>, V> : Tree<K, V> {
                     uncle.color = Color.BLACK
                     grandparent.color = Color.RED
                     current = grandparent
-                } else {
-                    if (current == parent.right()) {
-                        current = parent
-                        rotateLeft(current)
-                    }
-                    parent.color = Color.BLACK
-                    grandparent.color = Color.RED
-                    rotateRight(grandparent)
+                    continue
                 }
+                if (current == parent.right()) {
+                    current = parent
+                    rotateLeft(current)
+                }
+                parent.color = Color.BLACK
+                grandparent.color = Color.RED
+                rotateRight(grandparent)
             } else {
                 val uncle = grandparent.left()
                 if (uncle?.color == Color.RED) {
@@ -64,15 +63,15 @@ class RBTree<K : Comparable<K>, V> : Tree<K, V> {
                     uncle.color = Color.BLACK
                     grandparent.color = Color.RED
                     current = grandparent
-                } else {
-                    if (current == parent.left()) {
-                        current = parent
-                        rotateRight(current)
-                    }
-                    parent.color = Color.BLACK
-                    grandparent.color = Color.RED
-                    rotateLeft(grandparent)
+                    continue
                 }
+                if (current == parent.left()) {
+                    current = parent
+                    rotateRight(current)
+                }
+                parent.color = Color.BLACK
+                grandparent.color = Color.RED
+                rotateLeft(grandparent)
             }
         }
         root?.color = Color.BLACK
@@ -82,6 +81,7 @@ class RBTree<K : Comparable<K>, V> : Tree<K, V> {
         val rightChild = node.right() ?: return
         node.setRight(rightChild.left())
 
+        rightChild.parent = node.parent
         if (node.parent == null) {
             root = rightChild
         } else if (node == node.parent?.left()) {
@@ -91,12 +91,14 @@ class RBTree<K : Comparable<K>, V> : Tree<K, V> {
         }
 
         rightChild.setLeft(node)
+        node.parent = rightChild
     }
 
     private fun rotateRight(node: RBNode<K, V>) {
         val leftChild = node.left() ?: return
         node.setLeft(leftChild.right())
 
+        leftChild.parent = node.parent
         if (node.parent == null) {
             root = leftChild
         } else if (node == node.parent?.right()) {
@@ -106,6 +108,7 @@ class RBTree<K : Comparable<K>, V> : Tree<K, V> {
         }
 
         leftChild.setRight(node)
+        node.parent = leftChild
     }
 
     override fun search(key: K): V? = searchNode(key)?.value
@@ -125,6 +128,7 @@ class RBTree<K : Comparable<K>, V> : Tree<K, V> {
     override fun delete(key: K) {
         val node = searchNode(key) ?: return
         deleteNode(node)
+        root?.color = Color.BLACK
     }
 
     private fun deleteNode(z: RBNode<K, V>) {
@@ -145,9 +149,7 @@ class RBTree<K : Comparable<K>, V> : Tree<K, V> {
                 y = minimum(z.right()!!)
                 yOriginalColor = y.color
                 x = y.right()
-                if (y.parent == z) {
-                    x?.parent = y
-                } else {
+                if (y.parent != z) {
                     transplant(y, y.right())
                     y.setRight(z.right())
                     y.right()?.parent = y
@@ -164,66 +166,10 @@ class RBTree<K : Comparable<K>, V> : Tree<K, V> {
         }
     }
 
-    private fun fixAfterDeletion(x: RBNode<K, V>) {
-        var current = x
-        while (current != root && current.color == Color.BLACK) {
-            when {
-                current == current.parent?.left() -> {
-                    var sibling = current.parent?.right()
-                    if (sibling?.color == Color.RED) {
-                        sibling.color = Color.BLACK
-                        current.parent?.color = Color.RED
-                        current.parent?.let { rotateLeft(it) }
-                        sibling = current.parent?.right()
-                    }
-                    if (sibling?.left()?.color == Color.BLACK && sibling.right()?.color == Color.BLACK) {
-                        sibling.color = Color.RED
-                        current = current.parent!!
-                    } else {
-                        if (sibling?.right()?.color == Color.BLACK) {
-                            sibling.left()?.color = Color.BLACK
-                            sibling.color = Color.RED
-                            sibling.right()?.let { rotateRight(it) }
-                            sibling = current.parent?.right()
-                        }
-                        sibling?.color = current.parent?.color ?: Color.BLACK
-                        current.parent?.color = Color.BLACK
-                        sibling?.right()?.color = Color.BLACK
-                        current.parent?.let { rotateLeft(it) }
-                        current = root!!
-                    }
-                }
-                else -> {
-                    var sibling = current.parent?.left()
-                    if (sibling?.color == Color.RED) {
-                        sibling.color = Color.BLACK
-                        current.parent?.color = Color.RED
-                        current.parent?.let { rotateRight(it) }
-                        sibling = current.parent?.left()
-                    }
-                    if (sibling?.right()?.color == Color.BLACK && sibling.left()?.color == Color.BLACK) {
-                        sibling.color = Color.RED
-                        current = current.parent!!
-                    } else {
-                        if (sibling?.left()?.color == Color.BLACK) {
-                            sibling.right()?.color = Color.BLACK
-                            sibling.color = Color.RED
-                            sibling.left()?.let { rotateLeft(it) }
-                            sibling = current.parent?.left()
-                        }
-                        sibling?.color = current.parent?.color ?: Color.BLACK
-                        current.parent?.color = Color.BLACK
-                        sibling?.left()?.color = Color.BLACK
-                        current.parent?.let { rotateRight(it) }
-                        current = root!!
-                    }
-                }
-            }
-        }
-        current.color = Color.BLACK
-    }
-
     private fun transplant(u: RBNode<K, V>, v: RBNode<K, V>?) {
+        require(u !== v) { "Cannot transplant node onto itself" }
+        if (v != null) require(v.parent == null || v.parent == u) { "Node already has parent" }
+
         when {
             u.parent == null -> root = v
             u == u.parent?.left() -> u.parent?.setLeft(v)
@@ -231,6 +177,7 @@ class RBTree<K : Comparable<K>, V> : Tree<K, V> {
         }
         v?.parent = u.parent
     }
+
 
     private fun minimum(node: RBNode<K, V>): RBNode<K, V> {
         var current = node
@@ -240,6 +187,69 @@ class RBTree<K : Comparable<K>, V> : Tree<K, V> {
         return current
     }
 
+    private fun fixAfterDeletion(x: RBNode<K, V>?) {
+        var current = x ?: return
+        while (current != root && current.color == Color.BLACK) {
+            if (current == current.parent?.left()) {
+                var sibling = current.parent?.right() ?: break
+
+                if (sibling.color == Color.RED) {
+                    sibling.color = Color.BLACK
+                    current.parent?.color = Color.RED
+                    rotateLeft(current.parent!!)
+                    sibling = current.parent?.right() ?: break
+                }
+
+                if (sibling.left()?.color != Color.RED &&
+                    sibling.right()?.color != Color.RED) {
+                    sibling.color = Color.RED
+                    current = current.parent!!
+                } else {
+                    if (sibling.right()?.color != Color.RED) {
+                        sibling.left()?.color = Color.BLACK
+                        sibling.color = Color.RED
+                        rotateRight(sibling)
+                        sibling = current.parent?.right() ?: break
+                    }
+                    sibling.color = current.parent?.color ?: Color.BLACK
+                    current.parent?.color = Color.BLACK
+                    sibling.right()?.color = Color.BLACK
+                    rotateLeft(current.parent!!)
+                    current = root!!
+                }
+            } else {
+                var sibling = current.parent?.left() ?: break
+
+                if (sibling.color == Color.RED) {
+                    sibling.color = Color.BLACK
+                    current.parent?.color = Color.RED
+                    rotateRight(current.parent!!)
+                    sibling = current.parent?.left() ?: break
+                }
+
+                if (sibling.left()?.color != Color.RED &&
+                    sibling.right()?.color != Color.RED) {
+                    sibling.color = Color.RED
+                    current = current.parent!!
+                } else {
+                    if (sibling.left()?.color != Color.RED) {
+                        sibling.right()?.color = Color.BLACK
+                        sibling.color = Color.RED
+                        rotateLeft(sibling)
+                        sibling = current.parent?.left() ?: break
+                    }
+
+                    sibling.color = current.parent?.color ?: Color.BLACK
+                    current.parent?.color = Color.BLACK
+                    sibling.left()?.color = Color.BLACK
+                    rotateRight(current.parent!!)
+                    current = root!!
+                }
+            }
+        }
+        current.color = Color.BLACK
+    }
+
     override fun iteration(): List<Pair<K, V>> {
         val result = mutableListOf<Pair<K, V>>()
         inOrderTraversal(root, result)
@@ -247,10 +257,21 @@ class RBTree<K : Comparable<K>, V> : Tree<K, V> {
     }
 
     private fun inOrderTraversal(node: RBNode<K, V>?, result: MutableList<Pair<K, V>>) {
-        node?.let {
-            inOrderTraversal(it.left(), result)
-            result.add(it.key to it.value)
-            inOrderTraversal(it.right(), result)
+        val visited = mutableSetOf<RBNode<K, V>>()
+        val stack = ArrayDeque<RBNode<K, V>>()
+        var current = node
+
+        while (current != null || stack.isNotEmpty()) {
+            while (current != null) {
+                if (!visited.add(current)) {
+                    throw IllegalStateException("Cycle detected in tree traversal!")
+                }
+                stack.addLast(current)
+                current = current.left()
+            }
+            current = stack.removeLast()
+            result.add(current.key to current.value)
+            current = current.right()
         }
     }
 }

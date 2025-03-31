@@ -13,16 +13,14 @@ class RBNode<K : Comparable<K>, V>(
     fun right(): RBNode<K, V>? = super.right as? RBNode<K, V>
 
     fun setLeft(node: RBNode<K, V>?) {
-        super.left = node
-        if (node != null) {
-            node.parent = this
-        }
+        require(node !== this) { "Node cannot be its own left child" }
+        left = node
+        node?.parent = this
     }
 
     fun setRight(node: RBNode<K, V>?) {
-        super.right = node
-        if (node != null) {
-            node.parent = this
-        }
+        require(node !== this) { "Node cannot be its own right child" }
+        right = node
+        node?.parent = this
     }
 }
