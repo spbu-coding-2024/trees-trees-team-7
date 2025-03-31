@@ -1,3 +1,0 @@
-package bst
-
-fun main
