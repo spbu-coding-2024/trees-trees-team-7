@@ -176,4 +176,73 @@ internal class AVLTreeTest {
         tree.insert(5, "B")
         assertThat(tree.getRoot()?.balanceFactor).isEqualTo(1)
     }
+    @Test
+    fun `delete root with single child`() {
+        tree.insert(10, "A")
+        tree.insert(15, "B")
+        tree.delete(10)
+        assertEquals(listOf(15 to "B"), tree.iteration())
+        assertBalanced()
+    }
+
+    @Test
+    fun `node height after rotation`() {
+        tree.insert(30, "A")
+        tree.insert(20, "B")
+        tree.insert(10, "C")
+        val root = tree.getRoot()
+        assertEquals(2, root?.height)
+        assertEquals(1, root?.left?.height)
+        assertEquals(1, root?.right?.height)
+    }
+
+    @Test
+    fun `balance factor after insertions`() {
+        tree.insert(50, "A")
+        tree.insert(30, "B")
+        tree.insert(70, "C")
+        val root = tree.getRoot()
+        assertEquals(0, root?.balanceFactor)
+    }
+
+    @Test
+    fun `traverse empty tree`() {
+        assertTrue(tree.dfsInOrder().isEmpty())
+        assertTrue(tree.dfsPreOrder().isEmpty())
+        assertTrue(tree.dfsPostOrder().isEmpty())
+    }
+
+    @Test
+    fun `insert descending order`() {
+        listOf(5, 4, 3, 2, 1).forEach { tree.insert(it, "$it") }
+        assertBalanced()
+        assertEquals(listOf(1, 2, 3, 4, 5), tree.iteration().map { it.first })
+    }
+    @Test
+    fun `delete node with two children where min has right child`() {
+        tree.insert(20, "Root")
+        tree.insert(10, "L")
+        tree.insert(30, "R")
+        tree.insert(25, "RL")
+        tree.insert(35, "RR")
+        tree.delete(20)
+        assertThat(tree.iteration().map { it.first }).containsExactly(10, 25, 30, 35)
+        assertBalanced()
+    }
+    @Test
+    fun `insert descending order and check balance`() {
+        listOf(5, 4, 3, 2, 1).forEach { tree.insert(it, "$it") }
+        assertBalanced()
+        assertThat(tree.getRoot()?.key).isEqualTo(4)
+    }
+    @Test
+    fun `height after multiple operations`() {
+        tree.insert(50, "A")
+        tree.insert(30, "B")
+        tree.insert(70, "C")
+        tree.insert(20, "D")
+        tree.insert(40, "E")
+        tree.delete(20)
+        assertEquals(3, tree.getRoot()?.height)
+    }
 }
