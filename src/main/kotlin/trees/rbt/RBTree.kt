@@ -5,21 +5,25 @@ import Tree
 class RBTree<K : Comparable<K>, V> : Tree<K, V> {
     private var root: RBNode<K, V>? = null
 
-    override fun insert(key: K, value: V) {
+    override fun insert(
+        key: K,
+        value: V,
+    ) {
         val newNode = RBNode(key, value)
         var parent: RBNode<K, V>? = null
         var current = root
 
         while (current != null) {
             parent = current
-            current = when {
-                key < current.key -> current.left()
-                key > current.key -> current.right()
-                else -> {
-                    current.value = value
-                    return
+            current =
+                when {
+                    key < current.key -> current.left()
+                    key > current.key -> current.right()
+                    else -> {
+                        current.value = value
+                        return
+                    }
                 }
-            }
         }
 
         newNode.parent = parent
@@ -112,11 +116,12 @@ class RBTree<K : Comparable<K>, V> : Tree<K, V> {
     private fun searchNode(key: K): RBNode<K, V>? {
         var current = root
         while (current != null) {
-            current = when {
-                key < current.key -> current.left()
-                key > current.key -> current.right()
-                else -> return current
-            }
+            current =
+                when {
+                    key < current.key -> current.left()
+                    key > current.key -> current.right()
+                    else -> return current
+                }
         }
         return null
     }
@@ -163,7 +168,10 @@ class RBTree<K : Comparable<K>, V> : Tree<K, V> {
         }
     }
 
-    private fun transplant(u: RBNode<K, V>, v: RBNode<K, V>?) {
+    private fun transplant(
+        u: RBNode<K, V>,
+        v: RBNode<K, V>?,
+    ) {
         when {
             u.parent == null -> root = v
             u == u.parent?.left() -> u.parent?.setLeft(v)
@@ -247,7 +255,10 @@ class RBTree<K : Comparable<K>, V> : Tree<K, V> {
         return result
     }
 
-    private fun inOrderTraversal(node: RBNode<K, V>?, result: MutableList<Pair<K, V>>) {
+    private fun inOrderTraversal(
+        node: RBNode<K, V>?,
+        result: MutableList<Pair<K, V>>,
+    ) {
         val visited = mutableSetOf<RBNode<K, V>>()
         val stack = ArrayDeque<RBNode<K, V>>()
         var current = node

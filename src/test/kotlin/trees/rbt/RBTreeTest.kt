@@ -1,9 +1,12 @@
 package trees.rbt
 
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertDoesNotThrow
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNull
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
+import org.junit.jupiter.api.Test
 import kotlin.random.Random
 
 class RBTreeTest {
@@ -87,8 +90,10 @@ class RBTreeTest {
 
             values.forEach { key ->
                 tree.insert(key, key.toString())
-                assertTrue(isValidRedBlackTree(tree),
-                    "RB properties violated after inserting $key")
+                assertTrue(
+                    isValidRedBlackTree(tree),
+                    "RB properties violated after inserting $key",
+                )
             }
         }
 
@@ -100,8 +105,10 @@ class RBTreeTest {
             val toDelete = listOf(3, 12, 10)
             toDelete.forEach { key ->
                 tree.delete(key)
-                assertTrue(isValidRedBlackTree(tree),
-                    "RB properties violated after deleting $key")
+                assertTrue(
+                    isValidRedBlackTree(tree),
+                    "RB properties violated after deleting $key",
+                )
             }
         }
     }
@@ -134,7 +141,7 @@ class RBTreeTest {
     private fun calculateBlackHeights(
         node: RBNode<Int, String>?,
         current: Int,
-        heights: MutableSet<Int>
+        heights: MutableSet<Int>,
     ) {
         if (node == null) {
             heights.add(current + 1)
@@ -160,7 +167,10 @@ class RBTreeTest {
         return hasConsecutiveRedNodes(node.left()) || hasConsecutiveRedNodes(node.right())
     }
 
-    private fun printTree(node: RBNode<Int, String>?, indent: String = "") {
+    private fun printTree(
+        node: RBNode<Int, String>?,
+        indent: String = "",
+    ) {
         if (node == null) {
             println("${indent}NIL(BLACK)")
             return
@@ -192,7 +202,7 @@ class RBTreeTest {
             assertEquals(30, root?.right()?.key)
             assertTrue(
                 (root?.left()?.color == RBTColor.RED && root.right()?.color == RBTColor.RED) ||
-                        (root?.left()?.color == RBTColor.BLACK || root?.right()?.color == RBTColor.BLACK)
+                    (root?.left()?.color == RBTColor.BLACK || root?.right()?.color == RBTColor.BLACK),
             )
         }
     }
@@ -293,7 +303,6 @@ class RBTreeTest {
             }
         }
     }
-
 
     @Nested
     inner class EdgeCaseTests {
