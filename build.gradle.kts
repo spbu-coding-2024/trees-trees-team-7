@@ -1,8 +1,8 @@
 plugins {
     kotlin("jvm") version "2.1.10"
     jacoco
+    id("org.jlleitschuh.gradle.ktlint") version "12.1.0"
 }
-
 
 group = "org.example"
 version = "1.0-SNAPSHOT"
