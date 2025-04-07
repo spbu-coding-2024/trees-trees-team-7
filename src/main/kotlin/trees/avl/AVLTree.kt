@@ -5,7 +5,10 @@ import Tree
 class AVLTree<K : Comparable<K>, V> : Tree<K, V> {
     private var root: AVLNode<K, V>? = null
 
-    override fun insert(key: K, value: V) {
+    override fun insert(
+        key: K,
+        value: V,
+    ) {
         root = insert(root, key, value)
     }
 
@@ -17,33 +20,41 @@ class AVLTree<K : Comparable<K>, V> : Tree<K, V> {
 
     override fun iteration(): List<Pair<K, V>> = dfsInOrder()
 
-    private fun insert(node: AVLNode<K, V>?, key: K, value: V): AVLNode<K, V>? {
+    private fun insert(
+        node: AVLNode<K, V>?,
+        key: K,
+        value: V,
+    ): AVLNode<K, V>? {
         if (node == null) return AVLNode(key, value)
-        
+
         when {
             key < node.key -> node.left = insert(node.left, key, value)
             key > node.key -> node.right = insert(node.right, key, value)
             else -> node.value = value
         }
-        
+
         return balance(node)
     }
 
     private fun searchNode(key: K): AVLNode<K, V>? {
         var current = root
         while (current != null) {
-            current = when {
-                key < current.key -> current.left
-                key > current.key -> current.right
-                else -> return current
-            }
+            current =
+                when {
+                    key < current.key -> current.left
+                    key > current.key -> current.right
+                    else -> return current
+                }
         }
         return null
     }
 
     fun getRoot(): AVLNode<K, V>? = root
 
-    private fun delete(node: AVLNode<K, V>?, key: K): AVLNode<K, V>? {
+    private fun delete(
+        node: AVLNode<K, V>?,
+        key: K,
+    ): AVLNode<K, V>? {
         node ?: return null
 
         when {
@@ -59,7 +70,7 @@ class AVLTree<K : Comparable<K>, V> : Tree<K, V> {
                 node.right = delete(node.right, node.key)
             }
         }
-        
+
         return balance(node)
     }
 
@@ -73,14 +84,14 @@ class AVLTree<K : Comparable<K>, V> : Tree<K, V> {
     }
 
     private fun balanceRightHeavy(node: AVLNode<K, V>): AVLNode<K, V> {
-        node.left?.let { 
+        node.left?.let {
             if (getBalanceFactor(it) < 0) node.left = rotateLeft(it)
         }
         return rotateRight(node)
     }
 
     private fun balanceLeftHeavy(node: AVLNode<K, V>): AVLNode<K, V> {
-        node.right?.let { 
+        node.right?.let {
             if (getBalanceFactor(it) > 0) node.right = rotateRight(it)
         }
         return rotateLeft(node)
@@ -89,26 +100,26 @@ class AVLTree<K : Comparable<K>, V> : Tree<K, V> {
     private fun rotateRight(y: AVLNode<K, V>): AVLNode<K, V> {
         val x = y.left ?: return y
         val t2 = x.right
-        
+
         x.right = y
         y.left = t2
-        
+
         updateHeight(y)
         updateHeight(x)
-        
+
         return x
     }
 
     private fun rotateLeft(x: AVLNode<K, V>): AVLNode<K, V> {
         val y = x.right ?: return x
         val t2 = y.left
-        
+
         y.left = x
         x.right = t2
-        
+
         updateHeight(x)
         updateHeight(y)
-        
+
         return y
     }
 
@@ -118,8 +129,7 @@ class AVLTree<K : Comparable<K>, V> : Tree<K, V> {
 
     private fun height(node: AVLNode<K, V>?): Int = node?.height ?: 0
 
-    private fun getBalanceFactor(node: AVLNode<K, V>) = 
-        height(node.left) - height(node.right)
+    private fun getBalanceFactor(node: AVLNode<K, V>) = height(node.left) - height(node.right)
 
     private fun findMin(node: AVLNode<K, V>?): AVLNode<K, V> {
         var current = node ?: throw NoSuchElementException()
@@ -131,6 +141,7 @@ class AVLTree<K : Comparable<K>, V> : Tree<K, V> {
 
     fun dfsInOrder(): List<Pair<K, V>> {
         val result = mutableListOf<Pair<K, V>>()
+
         fun traverse(n: AVLNode<K, V>?) {
             n?.let {
                 traverse(it.left)
@@ -144,6 +155,7 @@ class AVLTree<K : Comparable<K>, V> : Tree<K, V> {
 
     fun dfsPreOrder(): List<Pair<K, V>> {
         val result = mutableListOf<Pair<K, V>>()
+
         fun traverse(n: AVLNode<K, V>?) {
             n?.let {
                 result.add(it.key to it.value)
@@ -157,6 +169,7 @@ class AVLTree<K : Comparable<K>, V> : Tree<K, V> {
 
     fun dfsPostOrder(): List<Pair<K, V>> {
         val result = mutableListOf<Pair<K, V>>()
+
         fun traverse(n: AVLNode<K, V>?) {
             n?.let {
                 traverse(it.left)
