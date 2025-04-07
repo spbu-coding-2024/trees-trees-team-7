@@ -64,6 +64,7 @@ dictionary.iteration().forEach { (term, definition) ->
 + Jacoco 0.8.13
 + JUnit 5
 + Kotlin 1.9.24
++ ktlint 12.1.0
 
 ## Contact us
 + [Egor Nikitin](https://t.me/insearchofparadise)
