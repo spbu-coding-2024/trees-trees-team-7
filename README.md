@@ -10,13 +10,13 @@ Our library provides an opportunity to use three structures, such as:
 ## Local start
 1. Clone the repository 
 2. Go to the project directory
-3.Build the project with Gradle:
+3. Build the project with Gradle:
 ```./gradlew build```
-4. Running tests
+4. Run tests:
 ```./gradlew test```
 
 ## Examples
-```
+```kotlin
 import trees.avl.AVLTree
 fun main() {
 val avlTree = AVLTree<Int, String>()
@@ -27,7 +27,7 @@ println("${avlTree.search(2)}") // Prints "two"
 }
 ```
 
-```
+```kotlin
 // Dictionary
 val dictionary = RBTree<String, String>().apply {
     insert("algorithm", "Набор инструкций")
@@ -51,15 +51,24 @@ dictionary.iteration().forEach { (term, definition) ->
 
 - Stress test
 
+## Code Quality
+
+- Code Style checks (**ktlint**):  
+  Run `./gradlew ktlintCheck` to verify code style
+  
+- Coverage reports (**Jacoco**):  
+  Run `./gradlew jacocoTestReport` to generate coverage reports → `build/reports/jacoco/`
+
 ## Based on 
-+ JUnit5
 + Gradle 8.10
++ Jacoco 0.8.13
++ JUnit 5
 + Kotlin 1.9.24
 
 ## Contact us
-+ Egor Nikitin - t.me/insearchofparadise
-+ Daniil Ivanov - t.me/desiredeternityyy
-+ Vladimir Khmelev - t.me/khmelevvova
++ [Egor Nikitin](https://t.me/insearchofparadise)
++ [Daniil Ivanov](https://t.me/desiredeternityyy)
++ [Vladimir Khmelev](https://t.me/khmelevvova)
 
 ## DOCS
 
