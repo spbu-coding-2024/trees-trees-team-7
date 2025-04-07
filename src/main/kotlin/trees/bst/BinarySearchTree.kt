@@ -5,7 +5,11 @@ import Tree
 class BinarySearchTree<K : Comparable<K>, V> : Tree<K, V> {
     private var root: BSTNode<K, V>? = null
 
-    private fun insertRecursion(node: BSTNode<K, V>?, key: K, value: V): BSTNode<K, V> {
+    private fun insertRecursion(
+        node: BSTNode<K, V>?,
+        key: K,
+        value: V,
+    ): BSTNode<K, V> {
         if (node == null) {
             return BSTNode(key, value)
         }
@@ -17,11 +21,17 @@ class BinarySearchTree<K : Comparable<K>, V> : Tree<K, V> {
         return node
     }
 
-    override fun insert(key: K, value: V) {
+    override fun insert(
+        key: K,
+        value: V,
+    ) {
         root = insertRecursion(root, key, value)
     }
 
-    private fun searchRecursion(node: BSTNode<K, V>?, key: K): V? {
+    private fun searchRecursion(
+        node: BSTNode<K, V>?,
+        key: K,
+    ): V? {
         if (node == null || node.key == key) {
             return node?.value
         }
@@ -40,7 +50,10 @@ class BinarySearchTree<K : Comparable<K>, V> : Tree<K, V> {
         root = deleteRecursion(root, key)
     }
 
-    private fun deleteRecursion(node: BSTNode<K, V>?, key: K): BSTNode<K, V>? {
+    private fun deleteRecursion(
+        node: BSTNode<K, V>?,
+        key: K,
+    ): BSTNode<K, V>? {
         if (node == null) {
             return null
         }
@@ -103,7 +116,10 @@ class BinarySearchTree<K : Comparable<K>, V> : Tree<K, V> {
         return containsRecursive(root, key)
     }
 
-    private fun containsRecursive(node: BSTNode<K, V>?, key: K): Boolean {
+    private fun containsRecursive(
+        node: BSTNode<K, V>?,
+        key: K,
+    ): Boolean {
         if (node == null) {
             return false
         }
