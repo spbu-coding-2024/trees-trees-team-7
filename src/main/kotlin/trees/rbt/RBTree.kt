@@ -37,7 +37,7 @@ class RBTree<K : Comparable<K>, V> : Tree<K, V> {
     private fun fixAfterInsertion(node: RBNode<K, V>) {
         var current = node
         while (current != root && current.parent?.color == RBTColor.RED) {
-            val parent = current.parent!!
+            val parent = current.parent ?: break
             val grandparent = parent.parent ?: break
 
             if (parent == grandparent.left()) {
@@ -82,12 +82,10 @@ class RBTree<K : Comparable<K>, V> : Tree<K, V> {
         node.setRight(rightChild.left())
 
         rightChild.parent = node.parent
-        if (node.parent == null) {
-            root = rightChild
-        } else if (node == node.parent?.left()) {
-            node.parent?.setLeft(rightChild)
-        } else {
-            node.parent?.setRight(rightChild)
+        when {
+            node.parent == null -> root = rightChild
+            node == node.parent?.left() -> node.parent?.setLeft(rightChild)
+            else -> node.parent?.setRight(rightChild)
         }
 
         rightChild.setLeft(node)
@@ -99,12 +97,10 @@ class RBTree<K : Comparable<K>, V> : Tree<K, V> {
         node.setLeft(leftChild.right())
 
         leftChild.parent = node.parent
-        if (node.parent == null) {
-            root = leftChild
-        } else if (node == node.parent?.right()) {
-            node.parent?.setRight(leftChild)
-        } else {
-            node.parent?.setLeft(leftChild)
+        when {
+            node.parent == null -> root = leftChild
+            node == node.parent?.right() -> node.parent?.setRight(leftChild)
+            else -> node.parent?.setLeft(leftChild)
         }
 
         leftChild.setRight(node)
@@ -146,7 +142,8 @@ class RBTree<K : Comparable<K>, V> : Tree<K, V> {
                 transplant(z, z.left())
             }
             else -> {
-                y = minimum(z.right()!!)
+                val right = z.right() ?: return
+                y = minimum(right)
                 yOriginalColor = y.color
                 x = y.right()
                 if (y.parent != z) {
@@ -167,9 +164,6 @@ class RBTree<K : Comparable<K>, V> : Tree<K, V> {
     }
 
     private fun transplant(u: RBNode<K, V>, v: RBNode<K, V>?) {
-        require(u !== v) { "Cannot transplant node onto itself" }
-        if (v != null) require(v.parent == null || v.parent == u) { "Node already has parent" }
-
         when {
             u.parent == null -> root = v
             u == u.parent?.left() -> u.parent?.setLeft(v)
@@ -178,11 +172,11 @@ class RBTree<K : Comparable<K>, V> : Tree<K, V> {
         v?.parent = u.parent
     }
 
-
     private fun minimum(node: RBNode<K, V>): RBNode<K, V> {
         var current = node
-        while (current.left() != null) {
-            current = current.left()!!
+        while (true) {
+            val left = current.left() ?: break
+            current = left
         }
         return current
     }
@@ -196,15 +190,13 @@ class RBTree<K : Comparable<K>, V> : Tree<K, V> {
                 if (sibling.color == RBTColor.RED) {
                     sibling.color = RBTColor.BLACK
                     current.parent?.color = RBTColor.RED
-                    rotateLeft(current.parent!!)
+                    rotateLeft(current.parent ?: break)
                     sibling = current.parent?.right() ?: break
                 }
 
-                if (sibling.left()?.color != RBTColor.RED &&
-                    sibling.right()?.color != RBTColor.RED
-                ) {
+                if (sibling.left()?.color != RBTColor.RED && sibling.right()?.color != RBTColor.RED) {
                     sibling.color = RBTColor.RED
-                    current = current.parent!!
+                    current = current.parent ?: break
                 } else {
                     if (sibling.right()?.color != RBTColor.RED) {
                         sibling.left()?.color = RBTColor.BLACK
@@ -215,8 +207,8 @@ class RBTree<K : Comparable<K>, V> : Tree<K, V> {
                     sibling.color = current.parent?.color ?: RBTColor.BLACK
                     current.parent?.color = RBTColor.BLACK
                     sibling.right()?.color = RBTColor.BLACK
-                    rotateLeft(current.parent!!)
-                    current = root!!
+                    rotateLeft(current.parent ?: break)
+                    current = root ?: break
                 }
             } else {
                 var sibling = current.parent?.left() ?: break
@@ -224,15 +216,13 @@ class RBTree<K : Comparable<K>, V> : Tree<K, V> {
                 if (sibling.color == RBTColor.RED) {
                     sibling.color = RBTColor.BLACK
                     current.parent?.color = RBTColor.RED
-                    rotateRight(current.parent!!)
+                    rotateRight(current.parent ?: break)
                     sibling = current.parent?.left() ?: break
                 }
 
-                if (sibling.left()?.color != RBTColor.RED &&
-                    sibling.right()?.color != RBTColor.RED
-                ) {
+                if (sibling.left()?.color != RBTColor.RED && sibling.right()?.color != RBTColor.RED) {
                     sibling.color = RBTColor.RED
-                    current = current.parent!!
+                    current = current.parent ?: break
                 } else {
                     if (sibling.left()?.color != RBTColor.RED) {
                         sibling.right()?.color = RBTColor.BLACK
@@ -240,12 +230,11 @@ class RBTree<K : Comparable<K>, V> : Tree<K, V> {
                         rotateLeft(sibling)
                         sibling = current.parent?.left() ?: break
                     }
-
                     sibling.color = current.parent?.color ?: RBTColor.BLACK
                     current.parent?.color = RBTColor.BLACK
                     sibling.left()?.color = RBTColor.BLACK
-                    rotateRight(current.parent!!)
-                    current = root!!
+                    rotateRight(current.parent ?: break)
+                    current = root ?: break
                 }
             }
         }

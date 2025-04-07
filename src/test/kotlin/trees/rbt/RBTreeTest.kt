@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
+import kotlin.random.Random
 
 class RBTreeTest {
     private lateinit var tree: RBTree<Int, String>
@@ -136,7 +137,7 @@ class RBTreeTest {
         heights: MutableSet<Int>
     ) {
         if (node == null) {
-            heights.add(current + 1) // NIL узлы считаются чёрными
+            heights.add(current + 1)
             return
         }
 
@@ -174,5 +175,146 @@ class RBTreeTest {
         val field = RBTree::class.java.getDeclaredField("root")
         field.isAccessible = true
         return field.get(tree) as? RBNode<Int, String>
+    }
+
+    @Nested
+    inner class ComplexInsertionScenarios {
+        @Test
+        fun `insertion should handle right-right case`() {
+            tree.insert(10, "10")
+            tree.insert(20, "20")
+            tree.insert(30, "30")
+
+            val root = getRoot(tree)
+            assertEquals(20, root?.key)
+            assertEquals(RBTColor.BLACK, root?.color)
+            assertEquals(10, root?.left()?.key)
+            assertEquals(30, root?.right()?.key)
+            assertTrue(
+                (root?.left()?.color == RBTColor.RED && root.right()?.color == RBTColor.RED) ||
+                        (root?.left()?.color == RBTColor.BLACK || root?.right()?.color == RBTColor.BLACK)
+            )
+        }
+    }
+
+    @Nested
+    inner class ComplexDeletionScenarios {
+        @Test
+        fun `deleting node with two children should work correctly`() {
+            tree.insert(50, "50")
+            tree.insert(30, "30")
+            tree.insert(70, "70")
+            tree.insert(20, "20")
+            tree.insert(40, "40")
+            tree.insert(60, "60")
+            tree.insert(80, "80")
+
+            tree.delete(50)
+            assertTrue(isValidRedBlackTree(tree))
+            assertEquals(listOf(20 to "20", 30 to "30", 40 to "40", 60 to "60", 70 to "70", 80 to "80"), tree.iteration())
+        }
+
+        @Test
+        fun `deleting red leaf should not violate properties`() {
+            tree.insert(50, "50")
+            tree.insert(30, "30")
+            tree.insert(70, "70")
+            tree.insert(20, "20")
+
+            tree.delete(20)
+            assertTrue(isValidRedBlackTree(tree))
+            assertEquals(listOf(30 to "30", 50 to "50", 70 to "70"), tree.iteration())
+        }
+
+        @Test
+        fun `deleting black node with red child should work`() {
+            tree.insert(50, "50")
+            tree.insert(30, "30")
+            tree.insert(70, "70")
+            tree.insert(60, "60")
+
+            tree.delete(70)
+            assertTrue(isValidRedBlackTree(tree))
+            assertEquals(listOf(30 to "30", 50 to "50", 60 to "60"), tree.iteration())
+        }
+    }
+
+    @Nested
+    inner class RandomTests {
+        private val random = Random(1234)
+
+        @Test
+        fun `inserting random elements should keep them accessible`() {
+            val numElements = 100
+            val insertedValues = mutableMapOf<Int, String>()
+
+            repeat(numElements) {
+                val key = random.nextInt(1, 1000)
+                val value = "Value$key"
+                tree.insert(key, value)
+                insertedValues[key] = value
+            }
+
+            insertedValues.forEach { (key, value) ->
+                assertEquals(value, tree.search(key), "Element $key should be found")
+            }
+        }
+
+        @Test
+        fun `searching for non-inserted random elements should return null`() {
+            val numElements = 100
+            val searchedKeys = mutableSetOf<Int>()
+
+            repeat(numElements) {
+                val randomKey = random.nextInt(1001, 2000)
+                searchedKeys.add(randomKey)
+            }
+
+            searchedKeys.forEach { key ->
+                assertNull(tree.search(key), "Element $key should not be found")
+            }
+        }
+
+        @Test
+        fun `deleting random elements should not throw errors`() {
+            val numElements = 1
+            val insertedKeys = mutableListOf<Int>()
+
+            repeat(numElements) {
+                val key = random.nextInt(1, 1000)
+                val value = "Value$key"
+                tree.insert(key, value)
+                insertedKeys.add(key)
+            }
+
+            insertedKeys.shuffled().take(50).forEach { key ->
+                tree.delete(key)
+                assertNull(tree.search(key), "Element $key should be deleted")
+            }
+        }
+    }
+
+
+    @Nested
+    inner class EdgeCaseTests {
+        @Test
+        fun `inserting ascending sequence should maintain RB properties`() {
+            repeat(100) { tree.insert(it, it.toString()) }
+            assertTrue(isValidRedBlackTree(tree))
+        }
+
+        @Test
+        fun `inserting descending sequence should maintain RB properties`() {
+            repeat(100) { tree.insert(100 - it, (100 - it).toString()) }
+            assertTrue(isValidRedBlackTree(tree))
+        }
+
+        @Test
+        fun `deleting all elements should result in empty tree`() {
+            repeat(100) { tree.insert(it, it.toString()) }
+            repeat(100) { tree.delete(it) }
+            assertNull(getRoot(tree))
+            assertTrue(tree.iteration().isEmpty())
+        }
     }
 }
